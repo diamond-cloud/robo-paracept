@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Codeception\Task\Filter;
 
 use Codeception\Lib\GroupManager;
-use Codeception\Test\Descriptor as TestDescriptor;
-use Codeception\Util\Annotation;
 use InvalidArgumentException;
+use PHPUnit\Framework\DataProviderTestSuite;
 use PHPUnit\Framework\SelfDescribing;
 
 /**
@@ -42,14 +41,6 @@ class GroupFilter implements Filter
     }
 
     /**
-     * @return SelfDescribing[]
-     */
-    public function getTests(): array
-    {
-        return $this->tests;
-    }
-
-    /**
      * Adds a group name to the excluded array
      */
     public function groupExcluded(string $group): self
@@ -68,6 +59,19 @@ class GroupFilter implements Filter
         }
 
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getIncludedGroups(): array
+    {
+        return $this->includedGroups;
+    }
+
+    public function getExcludedGroups(): array
+    {
+        return $this->excludedGroups;
     }
 
     /**
@@ -91,31 +95,10 @@ class GroupFilter implements Filter
         return $this;
     }
 
-    public function getExcludedGroups(): array
-    {
-        return $this->excludedGroups;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getIncludedGroups(): array
-    {
-        return $this->includedGroups;
-    }
-
-    /**
-     * @param SelfDescribing[] $tests
-     */
-    public function setTests(array $tests): void
-    {
-        $this->tests = $tests;
-    }
-
     /**
      * Filter the tests by the given included and excluded @group annotations
      *
-     * @return \PHPUnit\Framework\SelfDescribing[]
+     * @return SelfDescribing[]
      */
     public function filter(): array
     {
@@ -131,8 +114,7 @@ class GroupFilter implements Filter
 
             $groups = $groupManager->groupsForTest($test);
 
-            if (!$groups && $test instanceof \PHPUnit\Framework\DataProviderTestSuite) {
-                /** @var \PHPUnit\Framework\DataProviderTestSuite $dataProviderTestSuite */
+            if (!$groups && $test instanceof DataProviderTestSuite) {
                 $dataProviderTestSuite = $test;
                 // By definition (a) all tests of dataprovider test suite are the same test
                 // case definition, and (b) there is at least one test case
@@ -158,5 +140,21 @@ class GroupFilter implements Filter
         }
 
         return $testsByGroups;
+    }
+
+    /**
+     * @return SelfDescribing[]
+     */
+    public function getTests(): array
+    {
+        return $this->tests;
+    }
+
+    /**
+     * @param SelfDescribing[] $tests
+     */
+    public function setTests(array $tests): void
+    {
+        $this->tests = $tests;
     }
 }

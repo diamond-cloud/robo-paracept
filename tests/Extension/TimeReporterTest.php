@@ -6,34 +6,33 @@ namespace Tests\Codeception\Task\Extension;
 
 use Codeception\Event\TestEvent;
 use Codeception\Task\Extension\TimeReporter;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use const Tests\Codeception\Task\TEST_PATH;
 
 /**
  * Class TimeReporterTest
- *
- * @coversDefaultClass \Codeception\Task\Extension\TimeReporter
  */
+#[CoversClass(TimeReporter::class)]
+#[CoversMethod(TimeReporter::class, 'after')]
+#[CoversMethod(TimeReporter::class, 'endRun')]
 final class TimeReporterTest extends TestCase
 {
-    /**
-     * @covers ::after
-     * @covers ::endRun
-     */
-    public function testAfterAndEndRun()
+    public function testAfterAndEndRun() : void
     {
         $eventTests = [
-            ['testName' => 'tests/acceptance/bar/baz.php:testA', 'time' => 10,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testA', 'time' => 50,], // rerun
-            ['testName' => 'tests/acceptance/bar/baz.php:testB', 'time' => 100,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testC', 'time' => 50,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testD', 'time' => 33,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testD', 'time' => 50,], // rerun
-            ['testName' => 'tests/acceptance/bar/baz.php:testE', 'time' => 66,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testF', 'time' => 90,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testG', 'time' => 100,],
-            ['testName' => 'tests/acceptance/bar/baz.php:testG', 'time' => 13,], //rerun
-            ['testName' => 'tests/acceptance/bar/baz.php:testH', 'time' => 50,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testA', 'time' => 10.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testA', 'time' => 50.0,], // rerun
+            ['testName' => 'tests/acceptance/bar/baz.php:testB', 'time' => 100.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testC', 'time' => 50.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testD', 'time' => 33.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testD', 'time' => 50.0,], // rerun
+            ['testName' => 'tests/acceptance/bar/baz.php:testE', 'time' => 66.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testF', 'time' => 90.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testG', 'time' => 100.0,],
+            ['testName' => 'tests/acceptance/bar/baz.php:testG', 'time' => 13.0,], //rerun
+            ['testName' => 'tests/acceptance/bar/baz.php:testH', 'time' => 50.0,],
         ];
 
         $expected = [
@@ -67,19 +66,16 @@ final class TimeReporterTest extends TestCase
                 'testName' => $test['testName']
             ];
         }
+        $callCount=0;
 
         // get test name by the TestEventMock
         $reporter
             ->method('getTestName')
-            ->withConsecutive(
-                ...array_map(
-                    static function (TestEvent $event): array {
-                        return [$event];
-                    },
-                    array_column($testEvents, 'mock')
-                )
-            )
-            ->willReturnOnConsecutiveCalls(...array_column($testEvents, 'testName'));
+            ->willReturnCallback(function () use ($testEvents, &$callCount) {
+                $testName = $testEvents[$callCount]['testName'];
+                $callCount++;
+                return $testName;
+            });
 
         // fill timeList with the mocked Events
         foreach ($testEvents as $testEvent) {

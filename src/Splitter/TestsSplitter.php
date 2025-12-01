@@ -7,7 +7,10 @@ namespace Codeception\Task\Splitter;
 use Codeception\Configuration;
 use Codeception\Task\Filter\DefaultFilter;
 use Codeception\Task\Filter\Filter;
+use Codeception\Test\Loader;
+use Exception;
 use ReflectionClass;
+use ReflectionException;
 use Robo\Exception\TaskException;
 use Robo\Task\BaseTask;
 use RuntimeException;
@@ -61,10 +64,11 @@ abstract class TestsSplitter extends BaseTask
     }
 
     /**
-     * @param string[]|string $path - a single path or array of paths
+     * @param string|string[] $path - a single path or array of paths
+     *
      * @return $this|TestsSplitter
      */
-    public function testsFrom($path): TestsSplitter
+    public function testsFrom(array|string $path): TestsSplitter
     {
         $this->testsFrom = $path;
 
@@ -122,6 +126,7 @@ abstract class TestsSplitter extends BaseTask
 
     /**
      * Make sure that tests are in array are always with full path and name.
+     * @throws ReflectionException
      */
     protected function resolveDependenciesToFullNames(array $testsListWithDependencies): array
     {
@@ -141,9 +146,9 @@ abstract class TestsSplitter extends BaseTask
                 // just test name, that means that class name is the same, just different method name
                 if (strrpos($dependency, ':') === false) {
                     $testsListWithDependencies[$testName][$i] = trim(
-                        substr($testName, 0, strrpos($testName, ':')),
-                        ':'
-                    ) . ':' . $dependency;
+                            substr($testName, 0, strrpos($testName, ':')),
+                            ':'
+                        ) . ':' . $dependency;
                     continue;
                 }
 
@@ -204,26 +209,25 @@ abstract class TestsSplitter extends BaseTask
                 'This task requires Codeception to be loaded. Please require autoload.php of Codeception'
             );
         }
-        // autoload PHPUnit files
-        \Codeception\PHPUnit\Init::init();
 
         try {
             // load Codeception config to set base directory
-            \Codeception\Configuration::config();
-        } catch (\Exception $e) {
+            Configuration::config();
+        } catch (Exception) {
             $this->output()->writeln('Codeception config was not loaded, please load it manually');
         }
     }
 
     protected function doCodeceptLoaderExists(): bool
     {
-        return class_exists(\Codeception\Test\Loader::class);
+        return class_exists(Loader::class);
     }
 
     /**
      * Splitting array of files to the group files
      *
      * @param string[] $files - the relative path of the Testfile with or without test function
+     *
      * @example $this->splitToGroupFiles(['tests/FooCest.php', 'tests/BarTest.php:testBarReturn']);
      */
     protected function splitToGroupFiles(array $files): array
@@ -254,6 +258,7 @@ abstract class TestsSplitter extends BaseTask
             file_put_contents($filename, implode("\n", $tests));
             $filenames[] = $filename;
         }
+
         return $filenames;
     }
 }

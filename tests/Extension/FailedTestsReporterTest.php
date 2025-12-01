@@ -6,16 +6,17 @@ namespace Tests\Codeception\Task\Extension;
 
 use Codeception\Event\FailEvent;
 use Codeception\Task\Extension\FailedTestsReporter;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
+
 use const Tests\Codeception\Task\TEST_PATH;
 
 /**
  * Class FailedTestsReporterTest
- *
- * @coversDefaultClass \Codeception\Task\Extension\FailedTestsReporter
  */
+#[CoversMethod(FailedTestsReporter::class, 'endRun')]
 final class FailedTestsReporterTest extends TestCase
 {
     private array $failedTests = [
@@ -29,9 +30,7 @@ final class FailedTestsReporterTest extends TestCase
         ['testName' => 'tests/acceptance/bar/baz.php:testH',],
     ];
 
-    /**
-     * @covers ::endRun
-     */
+
     public function testEndRun(): void
     {
         $reporter = $this->getMockBuilder(FailedTestsReporter::class)
@@ -53,19 +52,15 @@ final class FailedTestsReporterTest extends TestCase
                 'testName' => $test['testName']
             ];
         }
-
+        $callCount = 0;
         // get test name by the TestEventMock
         $reporter
             ->method('getTestName')
-            ->withConsecutive(
-                ...array_map(
-                    static function (FailEvent $event): array {
-                        return [$event];
-                    },
-                    array_column($testEvents, 'mock')
-                )
-            )
-            ->willReturnOnConsecutiveCalls(...array_column($testEvents, 'testName'));
+            ->willReturnCallback(function () use ($testEvents, &$callCount) {
+                $testName = $testEvents[$callCount]['testName'];
+                $callCount++;
+                return $testName;
+            });
 
         foreach ($testEvents as $event) {
             $reporter->afterFail($event['mock']);

@@ -7,12 +7,15 @@ namespace Tests\Codeception\Task\Splitter;
 use Codeception\Task\Splitter\FailedTestSplitterTask;
 use Consolidation\Log\Logger;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversMethod;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Finder\Finder;
 use const Tests\Codeception\Task\TEST_PATH;
 
+#[CoversMethod(FailedTestSplitterTask::class, 'run')]
+#[CoversMethod(FailedTestSplitterTask::class, 'setReportPath')]
 final class FailedTestSplitterTaskTest extends TestCase
 {
     public function testRunWillFailIfReportFileDoesNotExists(): void
@@ -26,9 +29,6 @@ final class FailedTestSplitterTaskTest extends TestCase
         $task->run();
     }
 
-    /**
-     * @covers ::run
-     */
     public function testRun(): void
     {
         $expected = 4;
@@ -60,9 +60,6 @@ final class FailedTestSplitterTaskTest extends TestCase
         $this->assertFileDoesNotExist($groupTo . ($expected + 1));
     }
 
-    /**
-     * @covers ::setReportPath
-     */
     public function testSetReportPathWillThrowExceptionWithEmptyPath(): void
     {
         $task = new FailedTestSplitterTask(5);

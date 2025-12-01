@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Codeception\Task\Splitter;
 
 use InvalidArgumentException;
+use Robo\Exception\TaskException;
 use Robo\Result;
 use RuntimeException;
 
@@ -16,7 +17,7 @@ class FailedTestSplitterTask extends TestsSplitter
     private ?string $reportPath = null;
 
     /**
-     * @return string - the absolute path to the report file with the failed tests
+     * @return string|null - the absolute path to the report file with the failed tests
      */
     public function getReportPath(): ?string
     {
@@ -25,6 +26,7 @@ class FailedTestSplitterTask extends TestsSplitter
 
     /**
      * @inheritDoc
+     * @throws TaskException
      */
     public function run(): Result
     {

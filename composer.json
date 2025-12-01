@@ -14,9 +14,9 @@
         }
     },
     "require": {
-        "php": "^7.4 | ^8.0",
-        "consolidation/robo": "3.0.*",
-        "symfony/finder": ">=2.7 <6.0",
+        "php": "^8.2",
+        "consolidation/robo": "5.1.*",
+        "symfony/finder": ">=6.1 <8.0",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-json": "*"
@@ -28,20 +28,21 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "codeception/codeception": "4.1.*",
+        "codeception/codeception": "^5.3",
         "squizlabs/php_codesniffer": "^3.6.0",
-        "overtrue/phplint": "^3.0.0",
+        "overtrue/phplint": ">=9.5",
         "friendsofphp/php-cs-fixer": "^3.0.0",
-        "phpunit/phpunit": ">=9.0",
+        "phpunit/phpunit": ">=11",
+        "rector/rector": "^2.1",
         "codeception/phpunit-wrapper": "^9.0.6"
     },
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "8.2.0"
         }
     },
     "scripts": {
-        "unit": "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/ --exclude-group example --stderr -v --debug",
+        "unit": "vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/ --exclude-group example --stderr --debug",
         "lint": "vendor/bin/phplint -v ./ --exclude=vendor",
         "codestyle": "vendor/bin/phpcs --standard=PSR12 ./src",
         "test": [

@@ -7,50 +7,51 @@ namespace Tests\Codeception\Task\Splitter;
 use Codeception\Task\Splitter\SplitTestsByTimeTask;
 use Codeception\Task\Splitter\TestsSplitterTrait;
 use Consolidation\Log\Logger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversMethod;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Finder\Finder;
+
 use const Tests\Codeception\Task\TEST_PATH;
 
 /**
  * Class SplitTestsByTimeTaskTest
- *
- * @coversDefaultClass \Codeception\Task\Splitter\SplitTestsByTimeTask
  */
+#[CoversClass(SplitTestsByTimeTask::class)]
+#[CoversMethod(SplitTestsByTimeTask::class, 'run')]
 final class SplitTestsByTimeTaskTest extends TestCase
 {
     use TestsSplitterTrait;
 
-    /**
-     * @testdox splitting the tests by execution time
-     * @covers ::run
-     */
+    #[TestDox('splitting the tests by execution time')]
     public function testRun(): void
     {
         $expectedGroupContent = [
             'group_1' => [ // 150 sec. + 20 sec. = 170 sec.
-                'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testA',
-                'tests/fixtures/DependencyResolutionExampleTests2/DirA/Example1Test.php:testB',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testA',
+                           'tests/fixtures/DependencyResolutionExampleTests2/DirA/Example1Test.php:testB',
             ],
             'group_2' => [ // 130 sec. + 20 sec. + 10 sec. = 160 sec.
-                'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testB',
-                'tests/fixtures/Cests/DirB/ExampleACest.php:testExampleGoFrom',
-                'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testC',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testB',
+                           'tests/fixtures/Cests/DirB/ExampleACest.php:testExampleGoFrom',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirA/Example1Test.php:testC',
             ],
             'group_3' => [ // 120.10 sec. + 29.98 sec. + 0.5 sec. + 1.5 sec. + 0.3 sec. = 152.38 sec.
-                'tests/fixtures/Cests/DirC/ExampleACest.php:testExampleStayHere',
-                'tests/fixtures/Cests/DirA/ExampleACest.php:testExampleGoTo',
-                'tests/fixtures/Unit/ExampleBTest.php:testB',
-                'tests/fixtures/Unit/ExampleBTest.php:testA',
-                'tests/fixtures/Unit/ExampleATest.php:testB',
+                           'tests/fixtures/Cests/DirC/ExampleACest.php:testExampleStayHere',
+                           'tests/fixtures/Cests/DirA/ExampleACest.php:testExampleGoTo',
+                           'tests/fixtures/Unit/ExampleBTest.php:testB',
+                           'tests/fixtures/Unit/ExampleBTest.php:testA',
+                           'tests/fixtures/Unit/ExampleATest.php:testB',
             ],
             'group_4' => [ // 34 sec. + 35 sec. + 33 sec. + 30 sec. + 20 sec. + 0.3 sec. = 152.3 sec.
-                'tests/fixtures/DependencyResolutionExampleTests/DirA/Example2Test.php:testD',
-                'tests/fixtures/DependencyResolutionExampleTests/DirA/Example2Test.php:testE',
-                'tests/fixtures/DependencyResolutionExampleTests/DirB/Example3Test.php:testF',
-                'tests/fixtures/DependencyResolutionExampleTests/DirB/Example3Test.php:testG',
-                'tests/fixtures/DependencyResolutionExampleTests2/DirA/Example1Test.php:testA',
-                'tests/fixtures/Unit/ExampleATest.php:testA',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirA/Example2Test.php:testD',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirA/Example2Test.php:testE',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirB/Example3Test.php:testF',
+                           'tests/fixtures/DependencyResolutionExampleTests/DirB/Example3Test.php:testG',
+                           'tests/fixtures/DependencyResolutionExampleTests2/DirA/Example1Test.php:testA',
+                           'tests/fixtures/Unit/ExampleATest.php:testA',
             ],
         ];
 
